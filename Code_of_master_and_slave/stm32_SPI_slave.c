@@ -55,6 +55,7 @@ int main(void)
         {
             GPIOA->ODR ^= GPIO_ODR_ODR3;
         }
+				msg = 0;
         //    delay(500);
         //  GPIOA->ODR &= ~GPIO_ODR_ODR3;
     }

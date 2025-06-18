@@ -3,11 +3,11 @@
 <title>Static Call Graph - [.\Objects\stm32_SPI.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image .\Objects\stm32_SPI.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6230001: Last Updated: Thu Jun 19 00:46:07 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 6230001: Last Updated: Thu Jun 19 00:51:52 2025
 <BR><P>
-<H3>Maximum Stack Usage =         32 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =         48 bytes + Unknown(Functions without stacksize, Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
-SystemInit &rArr; SetSysClock &rArr; SetSysClockTo72
+__rt_entry_main &rArr; main &rArr; delay
 <P>
 <H3>
 Functions with no stack information
@@ -202,7 +202,7 @@ Global Symbols
 <P><STRONG><a name="[72]"></a>__rt_entry_postsh_1</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$00000009))
 
 <P><STRONG><a name="[3f]"></a>__rt_entry_main</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __rtentry2.o(.ARM.Collect$$rtentry$$0000000D))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32 + Unknown Stack Size
+<BR><BR>[Stack]<UL><LI>Max Depth = 48 + Unknown Stack Size
 <LI>Call Chain = __rt_entry_main &rArr; main &rArr; delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[41]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;exit
@@ -475,7 +475,7 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[4f]"></a>SPI_setup</STRONG> (Thumb, 50 bytes, Stack size 0 bytes, main.o(.text.SPI_setup))
+<P><STRONG><a name="[4f]"></a>SPI_setup</STRONG> (Thumb, 42 bytes, Stack size 0 bytes, main.o(.text.SPI_setup))
 <BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -502,8 +502,8 @@ Global Symbols
 <BR><BR>[Called By]<UL><LI><a href="#[40]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[40]"></a>main</STRONG> (Thumb, 144 bytes, Stack size 16 bytes, main.o(.text.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = main &rArr; delay
+<P><STRONG><a name="[40]"></a>main</STRONG> (Thumb, 164 bytes, Stack size 32 bytes, main.o(.text.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = main &rArr; delay
 </UL>
 <BR>[Calls]<UL><LI><a href="#[4a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;delay
 <LI><a href="#[4f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_setup

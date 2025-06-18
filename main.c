@@ -1,7 +1,8 @@
-//*******************************************************master********************************************************
-//*******************************************************master********************************************************
-//*******************************************************master********************************************************
-//*******************************************************master********************************************************
+//*******************************************************slave********************************************************
+//*******************************************************slave********************************************************
+//*******************************************************slave********************************************************
+//*******************************************************slave********************************************************
+
 #include <stm32f10x.h>
 
 /*
@@ -38,21 +39,25 @@ int main(void)
     GPIOA->ODR |= GPIO_ODR_ODR2;
     delay(2000);
     GPIOA->ODR &= ~GPIO_ODR_ODR2;
-    // delay(2000);
 
+    uint32_t msg = 0;
     while (1)
     {
-        // Loading data in DR
-        SPI1->DR = 'x';
-
-        // waiting for completing transmission
-        while ((SPI1->SR & SPI_SR_BSY))
-        { // Truning PA3 on if data is sending and spi is busy.
-            GPIOA->ODR |= GPIO_ODR_ODR3;
-        };
-        delay(50);
-        GPIOA->ODR &= ~GPIO_ODR_ODR3;
-        delay(3000);
+        if (SPI1->SR & SPI_SR_RXNE)
+        {
+            msg = SPI1->DR;
+            // SPI1->SR &= ~SPI_SR_RXNE;
+            GPIOA->ODR |= GPIO_ODR_ODR2;
+            delay(50);
+            GPIOA->ODR &= ~GPIO_ODR_ODR2;
+        }
+        if (msg == 'x')
+        {
+            GPIOA->ODR ^= GPIO_ODR_ODR3;
+        }
+				msg = 0;
+        //    delay(500);
+        //  GPIOA->ODR &= ~GPIO_ODR_ODR3;
     }
 
     return 0;
@@ -81,21 +86,21 @@ void gpio_setup(void)
     GPIOA->CRL &= ~(GPIO_CRL_CNF3 | GPIO_CRL_MODE3);
     GPIOA->CRL |= GPIO_CRL_MODE3;
 
-    // PA4 as AFoutput cnf =10, mode = 11;
+    // PA4 as input float cnf =01, mode = 00;
     GPIOA->CRL &= ~(GPIO_CRL_CNF4 | GPIO_CRL_MODE4);
-    GPIOA->CRL |= GPIO_CRL_CNF4_1 | GPIO_CRL_MODE4;
+    GPIOA->CRL |= GPIO_CRL_CNF4_0;
 
-    // PA5 as AF output cnf =10, mode = 11;
+    // PA5 as input float cnf =01, mode = 00;
     GPIOA->CRL &= ~(GPIO_CRL_CNF5 | GPIO_CRL_MODE5);
-    GPIOA->CRL |= GPIO_CRL_CNF5_1 | GPIO_CRL_MODE5;
+    GPIOA->CRL |= GPIO_CRL_CNF5_0;
 
-    // PA6 as input cnf =01, mode = 00;
+    // PA6 as output AF cnf =10, mode = 11;
     GPIOA->CRL &= ~(GPIO_CRL_CNF6 | GPIO_CRL_MODE6);
-    GPIOA->CRL |= GPIO_CRL_CNF6_0;
+    GPIOA->CRL |= GPIO_CRL_CNF6_1 | GPIO_CRL_MODE6;
 
-    // PA7 as AF output cnf =10, mode = 11;
+    // PA7 as input cnf =01, mode = 00;
     GPIOA->CRL &= ~(GPIO_CRL_CNF7 | GPIO_CRL_MODE7);
-    GPIOA->CRL |= GPIO_CRL_CNF7_1 | GPIO_CRL_MODE7;
+    GPIOA->CRL |= GPIO_CRL_CNF7_0;
 }
 
 void systick_config(void)
@@ -121,11 +126,11 @@ void delay(uint32_t count)
 
 void SPI_setup(void)
 {
-    // Config as master device
-    SPI1->CR1 |= SPI_CR1_MSTR;
+    // Config as slave device
+    SPI1->CR1 &= ~SPI_CR1_MSTR;
 
     // Setting baud rate  at lowest one 111
-    SPI1->CR1 |= SPI_CR1_BR;
+    // SPI1->CR1 |= SPI_CR1_BR;
 
     // Enabling SS output in CR2. Hardware will pulls down NSS (PA4).
     // And Transmition willbe strted autometic as soon as there is a load of data in SPI->DR
