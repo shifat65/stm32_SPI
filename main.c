@@ -24,32 +24,28 @@ int main(void)
 {
     // Activate SPI1 Peripheral / AFIO Function
     En_clock();
-
+    // config systic timer
+    systick_config();
     // Set up pin
     gpio_setup();
-
     // Setup SPI peripherals
     SPI_setup();
 
-    // we have single slave, always chip select is high, PA4-->> ss ==1;
-    GPIOA->ODR |= GPIO_ODR_ODR4;
-    delay(200);
     while (1)
     {
 
-        // making PA4 low to send data
-        GPIOA->ODR &= ~GPIO_ODR_ODR4;
+        // Loading data in DR
+        SPI1->DR = 0x50;
 
-        SPI1->DR = 'x';
-
-        while (SPI1->SR & SPI_SR_BSY)
+        // waiting for completing transmission
+        while ((SPI1->SR & SPI_SR_BSY))
         {
+            // Truning PA3 on if data is sending and spi is busy.
+            GPIOA->ODR |= GPIO_ODR_ODR3;
         };
-        delay(200);
-        // Making PA4 high after sending data
-        GPIOA->ODR |= GPIO_ODR_ODR4;
-
-        delay(100);
+        delay(500);
+        GPIOA->ODR &= ~GPIO_ODR_ODR3;
+        delay(500);
     }
 
     return 0;
@@ -78,9 +74,9 @@ void gpio_setup(void)
     GPIOA->CRL &= ~(GPIO_CRL_CNF3 | GPIO_CRL_MODE3);
     GPIOA->CRL |= GPIO_CRL_MODE3;
 
-    // PA4 as GP output cnf =10, mode = 11;
+    // PA4 as AFoutput cnf =10, mode = 11;
     GPIOA->CRL &= ~(GPIO_CRL_CNF4 | GPIO_CRL_MODE4);
-    GPIOA->CRL |= GPIO_CRL_MODE4;
+    GPIOA->CRL |= GPIO_CRL_CNF4_1 | GPIO_CRL_MODE4;
 
     // PA5 as AF output cnf =10, mode = 11;
     GPIOA->CRL &= ~(GPIO_CRL_CNF5 | GPIO_CRL_MODE5);
@@ -90,7 +86,7 @@ void gpio_setup(void)
     GPIOA->CRL &= ~(GPIO_CRL_CNF6 | GPIO_CRL_MODE6);
     GPIOA->CRL |= GPIO_CRL_CNF6_0;
 
-    // PA6 as AF output cnf =10, mode = 11;
+    // PA7 as AF output cnf =10, mode = 11;
     GPIOA->CRL &= ~(GPIO_CRL_CNF7 | GPIO_CRL_MODE7);
     GPIOA->CRL |= GPIO_CRL_CNF7_1 | GPIO_CRL_MODE7;
 }
@@ -124,7 +120,8 @@ void SPI_setup(void)
     // Setting baud rate  at lowest one 111
     SPI1->CR1 |= SPI_CR1_BR;
 
-    // Enabling SS output in CR2
+    // Enabling SS output in CR2. Hardware will pulls down NSS (PA4).
+    // And Transmition willbe strted autometic as soon as there is a load of data in SPI->DR
     SPI1->CR2 |= SPI_CR2_SSOE;
 
     // Enabling SPI
